@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Probes every component from GitHub's runners and rewrites status.json / incidents.json.
 # A component is DOWN only when two probes 20 s apart both fail (status or marker); a single blip is "degraded".
+# First failure on record (2026-10-23, before publish): a planted wrong Sign-in marker read "signin: down, overall: outage".
 # Exit 0 always: the workflow commits only when the files changed or the hourly heartbeat is due.
 set -uo pipefail
 NOW=$(date -u +%FT%TZ)
