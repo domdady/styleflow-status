@@ -1,0 +1,24 @@
+name: probe
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: probe
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash probe.sh
+      - name: commit when state changed or hourly heartbeat due
+        run: |
+          set -e
+          git config user.name "status-probe"; git config user.email "status-probe@users.noreply.github.com"
+          changed=$(git diff --name-only -- incidents.json | wc -l)
+          state_changed=$(git diff -U0 -- status.json | grep -E '^[+-]' | grep -E '"state"|"overall"' | wc -l)
+          last=$(git log -1 --format=%ct -- status.json 2>/dev/null || echo 0); now=$(date +%s)
+          if [ "$changed" -gt 0 ] || [ "$state_changed" -gt 0 ] || [ $((now-last)) -ge 3600 ]; then
+            git add status.json incidents.json && git commit -q -m "probe: $(python3 -c 'import json;print(json.load(open("status.json"))["overall"])') $(date -u +%FT%TZ)" && git push
+          else echo "no change"; fi

@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StyleFlow status</title><meta name="robots" content="noindex">
+<style>body{margin:0;padding:32px 16px;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#fffdf8;color:#1c1917;max-width:44rem;margin-inline:auto}h1{font-size:1.6rem;margin:0 0 4px}.sub{color:#57534e;margin:0 0 24px}.banner{padding:14px 16px;border-radius:10px;font-weight:600;margin-bottom:20px}.operational{background:#e7f6ea;color:#14532d}.degraded{background:#fff4d6;color:#7c4a03}.outage{background:#fde2e2;color:#7f1d1d}.unknown{background:#eee;color:#444}ul{list-style:none;padding:0;margin:0}li{display:flex;justify-content:space-between;gap:12px;padding:12px 4px;border-top:1px solid #e7e0d4}li:last-child{border-bottom:1px solid #e7e0d4}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}.d-operational{background:#16a34a}.d-degraded{background:#d97706}.d-down{background:#dc2626}h2{font-size:1.1rem;margin:28px 0 8px}.inc{font-size:.95rem;color:#44403c;padding:8px 0;border-top:1px solid #e7e0d4}footer{margin-top:32px;font-size:.85rem;color:#57534e}</style></head><body>
+<h1>StyleFlow status</h1><p class="sub">Checked every five minutes from outside StyleFlow's own hosting. <span id="asof"></span></p>
+<div id="banner" class="banner unknown">Loading…</div>
+<ul id="components"></ul>
+<h2>Recent incidents</h2><div id="incidents"><p class="inc">None recorded.</p></div>
+<footer>If something looks wrong here and your shop is affected, call or text the shop directly; appointments can always be made in person.</footer>
+<script>
+(async()=>{const words={operational:"All systems operational",degraded:"Some checks are intermittent",outage:"An outage is in progress",unknown:"Status unavailable"};
+try{const s=await (await fetch("status.json?"+Date.now())).json();const b=document.getElementById("banner");b.className="banner "+s.overall;b.textContent=words[s.overall]||s.overall;
+document.getElementById("asof").textContent=s.updatedAt?"Last check: "+new Date(s.updatedAt).toLocaleString():"";
+document.getElementById("components").innerHTML=s.components.map(c=>`<li><span><span class="dot d-${c.state}"></span>${c.name}</span><span>${c.state==="operational"?"Operational":c.state==="degraded"?"Intermittent":"Down"}</span></li>`).join("");
+const inc=await (await fetch("incidents.json?"+Date.now())).json();if(inc.length){document.getElementById("incidents").innerHTML=inc.slice().reverse().slice(0,10).map(i=>`<p class="inc"><strong>${i.name}</strong> — down from ${new Date(i.startedAt).toLocaleString()}${i.resolvedAt?" to "+new Date(i.resolvedAt).toLocaleString():" (ongoing)"}</p>`).join("")}
+}catch(e){document.getElementById("banner").textContent=words.unknown}})();
+</script></body></html>
