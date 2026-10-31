@@ -1,1 +1,9 @@
-[]
+[
+ {
+  "component": "shop",
+  "name": "Dominick's Barbershop (current site)",
+  "startedAt": "2026-10-31T21:55:27Z",
+  "resolvedAt": null,
+  "detail": "down 403"
+ }
+]
