@@ -17,7 +17,7 @@ probe() { # url okcodes marker -> "up|down <code>"
 COMPONENTS='booking|Booking & client site|https://styleflowapp.com/|200|href="/login"
 signin|Sign in|https://styleflowapp.com/login|200|id="login-password"
 api|Booking API|https://styleflowapp.com/api/version|200|commit
-shop|Dominick'"'"'s Barbershop (current site)|https://domsonlineshop.com/|200|book-now'
+shop|Dominick'"'"'s Barbershop|https://domsonlineshop.com/|200|book-now'
 prev=$(cat status.json 2>/dev/null || echo '{}')
 items=""; overall="operational"
 while IFS='|' read -r label name url ok marker; do
